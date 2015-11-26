@@ -7,8 +7,11 @@
         <script type="text/javascript" src="cdown.js"></script>
     </head>
     <body>
-        <div ng-app="ctdwntimer">
-            
+        <div ng-app="ctdwntimer" ng-controller="ctdwnController">
+            <p>enter no. of seconds</p>
+            <input type="number" min="0" ng-model="seconds">
+            <button type="button" ng-click="setTimer(seconds)">Set</button>
+            <p>Remaining Time: {{remsecs}}:{{remmillsecs%100}}</p>
         </div>
         
     </body>
