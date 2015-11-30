@@ -10,10 +10,13 @@
         <div ng-app="ctdwntimer" ng-controller="ctdwnController">
             <p>enter no. of seconds</p>
             <input type="number" min="0" ng-model="seconds">
-            <button type="button" ng-click="setTimer(seconds)">Set</button>
+            <button type="button" ng-click="setTime(seconds)">Set</button>
+            <button type="button" ng-click="stopTimer()">Stop</button>
             <p>Remaining Time: {{remsecs}}:{{remmillsecs%100}}</p>
+            
         </div>
         
     </body>
     
 </html>
+
