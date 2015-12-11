@@ -14,6 +14,7 @@
             <input type="number" min="0" max="990" step="10" ng-model="milliseconds">
             <button type="button" ng-click="setTime()">Set</button>
             <button type="button" ng-click="stopTimer()">Stop</button>
+            <button type="button" ng-click="resetTimer()">Reset</button>
             <p>Remaining Time: {{remsecs}}:{{remmillisecs%100*10}}</p> 
         </div>
         

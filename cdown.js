@@ -18,9 +18,6 @@ ctdwntimer.controller('ctdwnController',['$scope','$timeout','$interval',functio
         {  
             $scope.remmillisecs=($scope.seconds)*100+($scope.milliseconds/10);
             $scope.remsecs=$scope.remmillisecs/100;
-            //$scope.seconds=0;
-            //$scope.milliseconds=0;
-            console.log($scope.remmillisecs);
             currentCycle="running";
         }
         $scope.startTimer();
@@ -51,6 +48,23 @@ ctdwntimer.controller('ctdwnController',['$scope','$timeout','$interval',functio
             $interval.cancel(stop);
             stop=undefined;
         }
+    };
+    
+    $scope.resetTimer=function(){
+        
+        currentCycle=undefined;
+        if(angular.isUndefined(stop))                    //resets time only if timer is paused
+        {
+            $scope.stopTimer();
+            $scope.remmillisecs=($scope.seconds)*100+($scope.milliseconds/10);
+            $scope.remsecs=Math.floor($scope.remmillisecs/100);
+        }
+        else if(angular.isDefined(stop))                 //starts timer after resetting if timer is already running
+        {
+            $scope.stopTimer();
+            $scope.setTime();
+        }
+            
     };
     
     $scope.$on('$destroy', function() {
