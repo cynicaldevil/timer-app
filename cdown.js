@@ -3,31 +3,46 @@ var ctdwntimer=angular.module('ctdwntimer',[]);
 
 ctdwntimer.controller('ctdwnController',['$scope','$timeout','$interval',function($scope,$timeout,$interval){
     $scope.seconds=0;
+    $scope.milliseconds=0;
     $scope.remsecs=0;
     $scope.remmillsecs=0;
-    var stop1;
+    var currentCycle;
     var stop;
     
-    $scope.setTime=function(sec){
-        if(sec!==0)
+    $scope.$watch(function(){return [$scope.seconds,$scope.milliseconds];},function(){$scope.remsecs=$scope.seconds;
+                                     $scope.remmillisecs=$scope.milliseconds/10;
+                                    },true);
+    
+    $scope.setTime=function(){
+        if(angular.isUndefined(currentCycle))
         {  
-            $scope.remmillsecs=(sec)*100;
-            $scope.remsecs=$scope.remmillsecs/100;
-            $scope.seconds=0;
+            $scope.remmillisecs=($scope.seconds)*100+($scope.milliseconds/10);
+            $scope.remsecs=$scope.remmillisecs/100;
+            //$scope.seconds=0;
+            //$scope.milliseconds=0;
+            console.log($scope.remmillisecs);
+            currentCycle="running";
         }
         $scope.startTimer();
     };
     
     $scope.startTimer=function(){
-        stop=$interval(function(){
-            if($scope.remmillsecs>0)
-            {
-                $scope.remmillsecs--;
-                $scope.remsecs=$scope.remmillsecs/100;
-            }
-            else
-                $scope.stopTimer();
-        },10);
+        if(angular.isUndefined(stop))
+        {
+            
+            stop=$interval(function(){
+                if($scope.remmillisecs>0)
+                {
+                    $scope.remmillisecs--;
+                    $scope.remsecs=Math.floor($scope.remmillisecs/100);
+                }
+                else
+                {
+                    $scope.stopTimer();
+                    currentCycle=undefined;
+                }
+            },10);
+        }
     };
     
     $scope.stopTimer=function(){
@@ -41,6 +56,43 @@ ctdwntimer.controller('ctdwnController',['$scope','$timeout','$interval',functio
     $scope.$on('$destroy', function() {
         $scope.stopTimer();
     });
-           
     
+    
+    
+
+           
 }]);
+
+
+/*var stopwatch=angular.module("stopwatch",[]);
+stopwatch.controller("stopwatchController",["$scope","$intreval",function($scope,$interval){
+    $scope.mins=0;
+    $scope.secs=0;
+    $scope.millisecs=0;
+    
+    
+}]);*/
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
