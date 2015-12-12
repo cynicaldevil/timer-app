@@ -53,17 +53,9 @@ ctdwntimer.controller('ctdwnController',['$scope','$timeout','$interval',functio
     $scope.resetTimer=function(){
         
         currentCycle=undefined;
-        if(angular.isUndefined(stop))                    //resets time only if timer is paused
-        {
             $scope.stopTimer();
             $scope.remmillisecs=($scope.seconds)*100+($scope.milliseconds/10);
             $scope.remsecs=Math.floor($scope.remmillisecs/100);
-        }
-        else if(angular.isDefined(stop))                 //starts timer after resetting if timer is already running
-        {
-            $scope.stopTimer();
-            $scope.setTime();
-        }
             
     };
     
@@ -78,14 +70,52 @@ ctdwntimer.controller('ctdwnController',['$scope','$timeout','$interval',functio
 }]);
 
 
-/*var stopwatch=angular.module("stopwatch",[]);
-stopwatch.controller("stopwatchController",["$scope","$intreval",function($scope,$interval){
+var stopwatch=angular.module('stopwatch',[]);
+stopwatch.controller('stopwatchController',['$scope','$interval',function($scope,$interval){
+    console.log("SDGFSDGFHF");
     $scope.mins=0;
     $scope.secs=0;
     $scope.millisecs=0;
+    var stop;
+    
+    $scope.startClock=function(){
+        console.log("grsgtgd");
+        if(angular.isUndefined(stop)){
+            
+            stop=$interval(function(){
+                $scope.millisecs+=10;
+                $scope.secs=Math.floor($scope.millisecs/1000);
+                $scope.mins=Math.floor($scope.secs/60);
+            },10);
+            
+        }
+    };
+    
+    $scope.stopClock=function(){
+        if(angular.isDefined(stop)){
+           $interval.cancel(stop);
+           stop=undefined;
+        }
+    };
+    
+    $scope.resetClock=function(){
+        $scope.stopClock();
+        $scope.millisecs=0;
+        $scope.secs=0;
+        $scope.mins=0;
+    };
+    
+    $scope.$on('$destroy', function() {
+        $scope.stopTimer();
+    });
     
     
-}]);*/
+}]);
+
+angular.element(document).ready(function() {             //manually bootstrapping second ng-app             
+    
+    angular.bootstrap(document.getElementById("stopwatch"),["stopwatch"]);
+});
     
     
     
