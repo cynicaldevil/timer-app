@@ -4,18 +4,26 @@ var clockApp=angular.module('clock-app',[]);
 
 //controller for countdown timer
 clockApp.controller('ctdwnController',['$scope','$timeout','$interval',function($scope,$timeout,$interval){
+    $scope.clockState="Start";
     $scope.seconds=0;
     $scope.milliseconds=0;
     $scope.remsecs=0;
     $scope.remmillsecs=0;
     var currentCycle;
-    var stop;
+    $scope.stop;
     $scope.isDisabled=false;
     
     $scope.$watch(function(){return [$scope.seconds,$scope.milliseconds];},function(){$scope.remsecs=$scope.seconds;
                                      $scope.remmillisecs=$scope.milliseconds/10;
                                      currentCycle=undefined;                  //corner case: when time is changed after pausing
                                     },true);
+    
+    $scope.toggleStartStop=function(){                       //called to toggle Start/Stop state of clock
+    if($scope.stop===undefined)
+        $scope.setTime();
+    else
+        $scope.stopTimer(); 
+    };
     
     $scope.setTime=function(){
         if(angular.isUndefined(currentCycle))
@@ -28,10 +36,11 @@ clockApp.controller('ctdwnController',['$scope','$timeout','$interval',function(
     };
     
     $scope.startTimer=function(){
-        if(angular.isUndefined(stop))
+        if(angular.isUndefined($scope.stop))
         {
+            $scope.clockState="Stop";
             $scope.isDisabled=true;                           //disables input for time when timer is running
-            stop=$interval(function(){
+            $scope.stop=$interval(function(){
                 if($scope.remmillisecs>0)
                 {
                     $scope.remmillisecs--;
@@ -47,10 +56,10 @@ clockApp.controller('ctdwnController',['$scope','$timeout','$interval',function(
     };
     
     $scope.stopTimer=function(){
-        if(angular.isDefined(stop))                          //input for time is enabled once clock is paused
+        if(angular.isDefined($scope.stop))                          //input for time is enabled once clock is paused
         {
-            $interval.cancel(stop);
-            stop=undefined;
+            $interval.cancel($scope.stop);
+            $scope.stop=undefined;
             $scope.isDisabled=false;
         }
     };
@@ -71,7 +80,6 @@ clockApp.controller('ctdwnController',['$scope','$timeout','$interval',function(
 }]);
 
 
-
 //controller for stopwatch
 clockApp.controller('stopwatchController',['$scope','$interval',function($scope,$interval){
     console.log("SDGFSDGFHF");
@@ -80,14 +88,23 @@ clockApp.controller('stopwatchController',['$scope','$interval',function($scope,
     $scope.millisecs=0;
     $scope.timeSplitArray=[];
     $scope.lapArray=[];
-    var stop;
+    $scope.disableSplit=false;
+    $scope.disableLap=false;
+    $scope.stop;
     var countSplit=0;
     var countLap=0;
     
+    $scope.toggleStartStop=function(){                          //called to toggle Start/Stop state of clock
+        if($scope.stop===undefined)
+            $scope.startClock();
+        else
+            $scope.stopClock();
+        
+    };
+    
     $scope.startClock=function(){
-        console.log("grsgtgd");
-        if(angular.isUndefined(stop)){
-            stop=$interval(function(){
+        if(angular.isUndefined($scope.stop)){
+            $scope.stop=$interval(function(){
                 $scope.millisecs+=10;
                 $scope.secs=Math.floor($scope.millisecs/1000);
                 $scope.mins=Math.floor($scope.secs/60);
@@ -97,9 +114,9 @@ clockApp.controller('stopwatchController',['$scope','$interval',function($scope,
     };
     
     $scope.stopClock=function(){
-        if(angular.isDefined(stop)){
-           $interval.cancel(stop);
-           stop=undefined;
+        if(angular.isDefined($scope.stop)){
+           $interval.cancel($scope.stop);
+           $scope.stop=undefined;
         }
     };
     
@@ -110,24 +127,31 @@ clockApp.controller('stopwatchController',['$scope','$interval',function($scope,
         $scope.mins=0;
         $scope.timeSplitArray=[];
         $scope.lapArray=[];
+        $scope.disableLap=false;
+        $scope.disableSplit=false;
         countSplit=0;
         countLap=0;
         console.log($scope.timeSplitArray);
     };
     
     $scope.splitTime=function(){
-        if(stop!==undefined&&$scope.lapArray.length===0)
+        if($scope.stop!==undefined&&$scope.lapArray.length===0)
+        {
+            $scope.disableLap=true;
             $scope.timeSplitArray.push({index:++countSplit,
                                         mins:$scope.mins,
                                         secs:$scope.secs,
                                         millisecs:$scope.millisecs
                                        });
+        }
+
     };
     
     $scope.startNewLap=function()
     {
-        if(stop!==undefined&&$scope.timeSplitArray.length===0)
+        if($scope.stop!==undefined&&$scope.timeSplitArray.length===0)
         {
+            $scope.disableSplit=true;
             $scope.lapArray.push({index:++countLap,
                                   mins:$scope.mins,
                                   secs:$scope.secs,
@@ -139,10 +163,7 @@ clockApp.controller('stopwatchController',['$scope','$interval',function($scope,
             $scope.millisecs=0;
             $scope.startClock();
         }    
-    };
-    
-                                    
-            
+    };         
     
     $scope.$on('$destroy', function() {
         $scope.stopTimer();
@@ -150,8 +171,7 @@ clockApp.controller('stopwatchController',['$scope','$interval',function($scope,
     
     
 }]);
-
-    
+   
 //filter for padding numbers with zeroes
 clockApp.filter('padNumber',function(){
     return function(input,minDigits){                   //function concatenates required number of zeroes         
@@ -164,6 +184,17 @@ clockApp.filter('padNumber',function(){
     return output;
     };
 });
+
+//filter for toggling button label of Start/Stop button
+clockApp.filter('clockState',function(){
+    return function(stop){
+        if(stop===undefined)
+            return 'Start';
+        else
+            return 'Stop';
+    };
+});
+
     
     
     
