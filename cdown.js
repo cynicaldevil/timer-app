@@ -172,10 +172,17 @@ clockApp.controller('stopwatchController',['$scope','$interval',function($scope,
 }]);
 
 //controller for alarm
-clockApp.controller("alarmController",["$scope","$interval",function($scope,$interval){
-    $scope.hours=0;
+clockApp.controller("alarmController",["$scope","$interval","$filter",function($scope,$interval,$filter){
+    $scope.hours=12;
     $scope.minutes=0;
-    var date=new Date;
+    $scope.dayPeriod="AM";
+    $scope.date=$filter('date')(new Date(),'mediumTime');
+    $scope.setTime={};
+    $scope.currentTime={};
+    
+    $interval(function(){
+        $scope.date=$filter('date')(new Date(),'mediumTime');
+    },1000);
     
     $scope.incrementHours=function(){
         $scope.hours=++$scope.hours>12?1:$scope.hours;
@@ -192,6 +199,27 @@ clockApp.controller("alarmController",["$scope","$interval",function($scope,$int
     $scope.decrementMinutes=function(){
         $scope.minutes=--$scope.minutes<=0?59:$scope.minutes;
     };
+    
+    $scope.toggleDayPeriod=function(){
+        $scope.dayPeriod=$scope.dayPeriod==="AM"?"PM":"AM";
+    };
+    
+    $scope.setAlarm=function(){
+        $scope.setTime={hours:$scope.hours,
+                        mins:$scope.minutes
+                        };
+        $scope.currentTime={hours:new Date().getHours(),
+                            mins:new Date().getMinutes()
+                            };
+        
+        //console.log($scope.currentTime.hours+" "+ $scope.currentTime.mins);
+        if($scope.dayPeriod==="PM")
+            $scope.setTime.hours+=12;
+        
+        console.log("Alarm has been set for "+($scope.setTime.hours-$scope.currentTime.hours+24)%24+" hours from now");
+        //console.log(((6-21)+24)%24);    
+    };
+    
 }]);
    
 //filter for padding numbers with zeroes
