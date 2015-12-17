@@ -82,7 +82,6 @@ clockApp.controller('ctdwnController',['$scope','$timeout','$interval',function(
 
 //controller for stopwatch
 clockApp.controller('stopwatchController',['$scope','$interval',function($scope,$interval){
-    console.log("SDGFSDGFHF");
     $scope.mins=0;
     $scope.secs=0;
     $scope.millisecs=0;
@@ -170,6 +169,29 @@ clockApp.controller('stopwatchController',['$scope','$interval',function($scope,
     });
     
     
+}]);
+
+//controller for alarm
+clockApp.controller("alarmController",["$scope","$interval",function($scope,$interval){
+    $scope.hours=0;
+    $scope.minutes=0;
+    var date=new Date;
+    
+    $scope.incrementHours=function(){
+        $scope.hours=++$scope.hours>12?1:$scope.hours;
+    };
+    
+    $scope.decrementHours=function(){
+        $scope.hours=--$scope.hours<=0?12:$scope.hours;
+    };
+    
+    $scope.incrementMinutes=function(){
+        $scope.minutes=++$scope.minutes>=60?0:$scope.minutes;
+    };
+    
+    $scope.decrementMinutes=function(){
+        $scope.minutes=--$scope.minutes<=0?59:$scope.minutes;
+    };
 }]);
    
 //filter for padding numbers with zeroes

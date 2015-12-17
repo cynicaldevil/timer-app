@@ -5,6 +5,8 @@
         <title>Countdown timer app</title>
         <script type="text/javascript" src="angular.min.js"></script>
         <script type="text/javascript" src="cdown.js"></script>
+        <link rel="stylesheet" type="text/css" href="cdown.css">
+
     </head>
     <body>
     <div ng-app="clock-app">
@@ -28,6 +30,23 @@
             <button type="button" ng-click="startNewLap()" ng-disabled="disableLap">Lap</button>
             <div ng-repeat="timeSplit in timeSplitArray|orderBy:'-index'">#{{timeSplit.index}} {{timeSplit.mins|padNumber:2}}:{{(timeSplit.secs)%60|padNumber:2}}:{{(timeSplit.millisecs)%1000|padNumber:3}}</div>
             <div ng-repeat="lap in lapArray|orderBy:'-index'">#{{lap.index}} {{lap.mins|padNumber:2}}:{{(lap.secs)%60|padNumber:2}}:{{(lap.millisecs)%1000|padNumber:3}}</div>
+        </div>
+        
+        <div id="alarm" ng-controller="alarmController">
+            Alarm
+            <div>
+            <div >
+                Hours: {{hours|padNumber:2}}
+                <button type="button" ng-click="incrementHours()">+</button>
+                <button type="button" ng-click="decrementHours()">-</button>
+            </div>
+            
+            <div>
+                Minutes: {{minutes|padNumber:2}}
+                <button type="button" ng-click="incrementMinutes()">+</button>
+                <button type="button" ng-click="decrementMinutes()">-</button>
+            </div>
+                </div>
         </div>
     </div>
         
