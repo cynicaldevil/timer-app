@@ -55,6 +55,8 @@
             <div id="currentTime">
                 Current Time: {{date}}
             </div>
+                <div ng-repeat="alarm in alarms|orderBy:timeDiff">#{{alarm.index}} {{alarm.timeDiff/60|roundOff}}H 
+                    {{alarm.timeDiff%60}}M</div>
                 <button type="button" ng-click="setAlarm()">Set Alarm</button>
         </div>
     </div>

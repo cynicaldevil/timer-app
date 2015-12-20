@@ -172,13 +172,18 @@ clockApp.controller('stopwatchController',['$scope','$interval',function($scope,
 }]);
 
 //controller for alarm
-clockApp.controller("alarmController",["$scope","$interval","$filter",function($scope,$interval,$filter){
+clockApp.controller("alarmController",["$scope","$interval","$timeout","$filter",function($scope,$interval,$timeout,$filter){
     $scope.hours=12;
     $scope.minutes=0;
     $scope.dayPeriod="AM";
     $scope.date=$filter('date')(new Date(),'mediumTime');
+    $scope.alarms=[];
     $scope.setTime={};
     $scope.currentTime={};
+    var totalSetTimeMins;
+    var totalCurrentTimeMins;
+    var timeDiff;
+    var countAlarms=0;
     
     $interval(function(){
         $scope.date=$filter('date')(new Date(),'mediumTime');
@@ -209,15 +214,30 @@ clockApp.controller("alarmController",["$scope","$interval","$filter",function($
                         mins:$scope.minutes
                         };
         $scope.currentTime={hours:new Date().getHours(),
-                            mins:new Date().getMinutes()
+                            mins:new Date().getMinutes(),
+                            secs:new Date().getSeconds(),
+                            millisecs:new Date().getMilliseconds(),
                             };
         
-        //console.log($scope.currentTime.hours+" "+ $scope.currentTime.mins);
-        if($scope.dayPeriod==="PM")
-            $scope.setTime.hours+=12;
+        $scope.setTime.hours%=12;                    //converting from 12 hour
+        if($scope.dayPeriod==="PM")                  //to a
+            $scope.setTime.hours+=12;                //24 hour format
         
-        console.log("Alarm has been set for "+($scope.setTime.hours-$scope.currentTime.hours+24)%24+" hours from now");
-        //console.log(((6-21)+24)%24);    
+        totalSetTimeMins=$scope.setTime.hours*60+$scope.setTime.mins;
+        totalCurrentTimeMins=$scope.currentTime.hours*60+$scope.currentTime.mins;
+        timeDiff=((24*60)+totalSetTimeMins-totalCurrentTimeMins)%(24*60);
+        
+        $scope.alarms.push({index:$scope.alarms.length+1,
+                               timeDiff:timeDiff,
+                               stop:$timeout(function(){
+                                   console.log("ALARM! #"+$scope.alarms.shift().index)
+                               },(timeDiff*60-$scope.currentTime.secs)*1000-$scope.currentTime.millisecs)});
+                            
+        $scope.alarms.sort(function(a,b){return a.timeDiff-b.timeDiff});
+                            
+        //console.log(Math.floor(timeDiff/60)+" "+timeDiff%60);
+        
+        console.log("Alarm #"+$scope.alarms[$scope.alarms.length-1].index+" has been set for "+Math.floor(timeDiff/60)+" hours and "+timeDiff%60+" minutes from now");
     };
     
 }]);
@@ -243,6 +263,13 @@ clockApp.filter('clockState',function(){
         else
             return 'Stop';
     };
+});
+
+//stupid filter because angular won't allow me to call functions in templates
+clockApp.filter('roundOff',function(){
+    return function(input){
+        return Math.floor(input);
+    }
 });
 
     
