@@ -6,35 +6,35 @@ var clockApp=angular.module('clock-app',[]);
 clockApp.controller('ctdwnController',['$scope','$timeout','$interval',function($scope,$timeout,$interval){
     $scope.clockState="Start";
     $scope.seconds=0;
-    $scope.milliseconds=0;
     $scope.remsecs=0;
+    $scope.milliseconds=0;
     $scope.remmillsecs=0;
     var currentCycle;
     $scope.stop;
     $scope.isDisabled=false;
-    
+
     $scope.$watch(function(){return [$scope.seconds,$scope.milliseconds];},function(){$scope.remsecs=$scope.seconds;
                                      $scope.remmillisecs=$scope.milliseconds/10;
                                      currentCycle=undefined;                  //corner case: when time is changed after pausing
                                     },true);
-    
+
     $scope.toggleStartStop=function(){                       //called to toggle Start/Stop state of clock
     if(angular.isUndefined($scope.stop))
         $scope.setTime();
     else
-        $scope.stopTimer(); 
+        $scope.stopTimer();
     };
-    
+
     $scope.setTime=function(){
         if(angular.isUndefined(currentCycle))
-        {  
+        {
             $scope.remmillisecs=($scope.seconds)*100+($scope.milliseconds/10);
             $scope.remsecs=$scope.remmillisecs/100;
             currentCycle="running";
         }
         $scope.startTimer();
     };
-    
+
     $scope.startTimer=function(){
         if(angular.isUndefined($scope.stop))
         {
@@ -54,7 +54,7 @@ clockApp.controller('ctdwnController',['$scope','$timeout','$interval',function(
             },10);
         }
     };
-    
+
     $scope.stopTimer=function(){
         if(angular.isDefined($scope.stop))                          //input for time is enabled once clock is paused
         {
@@ -63,20 +63,20 @@ clockApp.controller('ctdwnController',['$scope','$timeout','$interval',function(
             $scope.isDisabled=false;
         }
     };
-    
+
     $scope.resetTimer=function(){
-        
+
         currentCycle=undefined;
             $scope.stopTimer();
             $scope.remmillisecs=($scope.seconds)*100+($scope.milliseconds/10);
             $scope.remsecs=Math.floor($scope.remmillisecs/100);
-            
+
     };
-    
+
     $scope.$on('$destroy', function() {
         $scope.stopTimer();
     });
-              
+
 }]);
 
 
@@ -92,15 +92,15 @@ clockApp.controller('stopwatchController',['$scope','$interval',function($scope,
     $scope.stop;
     var countSplit=0;
     var countLap=0;
-    
+
     $scope.toggleStartStop=function(){                          //called to toggle Start/Stop state of clock
         if($scope.stop===undefined)
             $scope.startClock();
         else
             $scope.stopClock();
-        
+
     };
-    
+
     $scope.startClock=function(){
         if(angular.isUndefined($scope.stop)){
             $scope.stop=$interval(function(){
@@ -108,17 +108,17 @@ clockApp.controller('stopwatchController',['$scope','$interval',function($scope,
                 $scope.secs=Math.floor($scope.millisecs/1000);
                 $scope.mins=Math.floor($scope.secs/60);
             },10);
-            
+
         }
     };
-    
+
     $scope.stopClock=function(){
         if(angular.isDefined($scope.stop)){
            $interval.cancel($scope.stop);
            $scope.stop=undefined;
         }
     };
-    
+
     $scope.resetClock=function(){
         $scope.stopClock();
         $scope.millisecs=0;
@@ -132,7 +132,7 @@ clockApp.controller('stopwatchController',['$scope','$interval',function($scope,
         countLap=0;
         console.log($scope.timeSplitArray);
     };
-    
+
     $scope.splitTime=function(){
         if($scope.stop!==undefined&&$scope.lapArray.length===0)
         {
@@ -145,7 +145,7 @@ clockApp.controller('stopwatchController',['$scope','$interval',function($scope,
         }
 
     };
-    
+
     $scope.startNewLap=function()
     {
         if($scope.stop!==undefined&&$scope.timeSplitArray.length===0)
@@ -161,14 +161,14 @@ clockApp.controller('stopwatchController',['$scope','$interval',function($scope,
             $scope.secs=0;
             $scope.millisecs=0;
             $scope.startClock();
-        }    
-    };         
-    
+        }
+    };
+
     $scope.$on('$destroy', function() {
         $scope.stopTimer();
     });
-    
-    
+
+
 }]);
 
 //controller for alarm
@@ -184,44 +184,44 @@ clockApp.controller("alarmController",["$scope","$interval","$timeout","$filter"
     var totalCurrentTimeMins;
     var timeDiff;
     var countAlarms=0;
-    
+
     $interval(function(){
         $scope.date=$filter('date')(new Date(),'mediumTime');
     },1000);
-    
+
     $scope.incrementHours=function(){
         $scope.hours=++$scope.hours>12?1:$scope.hours;
     };
-    
+
     $scope.decrementHours=function(){
         $scope.hours=--$scope.hours<=0?12:$scope.hours;
     };
-    
+
     $scope.incrementMinutes=function(){
         $scope.minutes=++$scope.minutes>=60?0:$scope.minutes;
     };
-    
+
     $scope.decrementMinutes=function(){
         $scope.minutes=--$scope.minutes<=0?59:$scope.minutes;
     };
-    
+
     $scope.toggleDayPeriod=function(){
         $scope.dayPeriod=$scope.dayPeriod==="AM"?"PM":"AM";
     };
-    
+
     $scope.toggleCancelSet=function(alarm){
           if(angular.isDefined(alarm.stop))
               $scope.cancelAlarm(alarm);
           else
               $scope.setAlarm(alarm);
     };
-    
+
     $scope.setAlarm=function(alarm){
         if(angular.isUndefined(alarm))                     //case when new alarm is set
         {
             $scope.setTime={hours:$scope.hours,
                     mins:$scope.minutes
-                   }; 
+                   };
 
             $scope.setTime.hours%=12;                    //converting from 12 hour
             if($scope.dayPeriod==="PM")                  //to a
@@ -232,7 +232,7 @@ clockApp.controller("alarmController",["$scope","$interval","$timeout","$filter"
             $scope.setTime=alarm.setTime;
             //console.log($scope.setTime.hours);
         }
-        
+
         $scope.currentTime={hours:new Date().getHours(),
                             mins:new Date().getMinutes(),
                             secs:new Date().getSeconds(),
@@ -240,65 +240,88 @@ clockApp.controller("alarmController",["$scope","$interval","$timeout","$filter"
                             };
         totalCurrentTimeMins=$scope.currentTime.hours*60+$scope.currentTime.mins;
         totalSetTimeMins=$scope.setTime.hours*60+$scope.setTime.mins;
-        timeDiff=((24*60)+totalSetTimeMins-totalCurrentTimeMins)%(24*60);
-        
+        timeDiff=((24*60)+totalSetTimeMins-totalCurrentTimeMins-1)%(24*60);
+
         if(angular.isUndefined(alarm))
-        { 
-            console.log("gstd");
-            $scope.alarms.push({index:++countAlarms,           //insert new alarm object into 'alarms' array
+        {
+            //console.log("gstd");
+            var alarm={index:++countAlarms,           //insert new alarm object into 'alarms' array
                        timeDiff:timeDiff,
-                       setTime:$scope.setTime,
-                       stop:$timeout(function(){
-                           console.log("ALARM! #"+this.index);
-                           $scope.cancelAlarm(this)
-                       },(timeDiff*60-$scope.currentTime.secs)*1000-$scope.currentTime.millisecs,true,this)});
+                       setTime:$scope.setTime};
+
+            alarm.stop=$timeout(function(){
+                           console.log("ALARM! #"+alarm.index);
+                           $scope.cancelAlarm(alarm)
+                       },((timeDiff+1)*60-$scope.currentTime.secs)*1000-$scope.currentTime.millisecs);
+
+            $scope.alarms.push(alarm);
         }
         else
         {
-            
               if(angular.isUndefined(alarm.stop))
               {
-                  
                   alarm.timeDiff=timeDiff;
-                  
                   alarm.stop=$timeout(function(){
                       console.log("ALARM! #"+alarm.index);
                       $scope.cancelAlarm(alarm)
-                       },(alarm.timeDiff*60-$scope.currentTime.secs)*1000-$scope.currentTime.millisecs);
+                      },((alarm.timeDiff+1)*60-$scope.currentTime.secs)*1000-$scope.currentTime.millisecs);
               }
-              
-                  
         }
-        
 
-        console.log("Alarm #"+$scope.alarms[$scope.alarms.length-1].index+" has been set for "+Math.floor(timeDiff/60)+" hours and "+timeDiff%60+" minutes from now");
-        $scope.alarms.sort(function(a,b){return a.timeDiff-b.timeDiff});  
+
+        console.log("Alarm #"+$scope.alarms[$scope.alarms.length-1].index+" has been set for "+timeString(alarm.timeDiff)+" from now");
+        $scope.alarms.sort(function(a,b){return a.timeDiff-b.timeDiff});
 
     };
-    
-        
- 
+
     $scope.cancelAlarm=function(alarm){
+
           if(angular.isDefined(alarm.stop))
           {
+              //console.log("sdg");
                $timeout.cancel(alarm.stop);
                alarm.stop=undefined;
-                console.log("Alarm #"+alarm.index+" with timeDiff "+Math.floor(alarm.timeDiff/60)+" hours and "+alarm.timeDiff%60+" minutes has been cancelled");
+                console.log("Alarm #"+alarm.index+" with timeDiff "+timeString(alarm.timeDiff)+" has been cancelled");
           }
+    };
 
+    $scope.deleteAlarm=function($index){
+
+        console.log("$index:"+$index);
+        var alarmarr=$scope.alarms.splice($index,1);
+        var alarm=alarmarr[0];
+        console.log("alarm"+alarm);
+        $timeout.cancel(alarm.stop);
+    console.log("Alarm #"+alarm.index+" with timeDiff "+timeString(alarm.timeDiff)+" has been deleted");
     };
     
+    var timeString=function(timeDiff)
+    {
+        if(timeDiff===0)
+            return "less than a minute";
+        else {
+            return (Math.floor(timeDiff/60)+" hours and "+timeDiff%60+" minutes");
+        }
+    };
+
+    $scope.$on('$destroy', function()
+    {
+        for(alarm of $scope.alarms)
+            $scope.cancel(alarm.stop);
+    });
+
+
 }]);
-   
+
 //filter for padding numbers with zeroes
 clockApp.filter('padNumber',function(){
-    return function(input,minDigits){                   //function concatenates required number of zeroes         
+    return function(input,minDigits){                   //function concatenates required number of zeroes
     var numLength=input.toString().length;              //from zeroesString to the number
     var output=input.toString();
     var zeroesString="00000000000000";
     if(numLength<minDigits)
         output=zeroesString.substring(0,minDigits-numLength)+output;
-    
+
     return output;
     };
 });
@@ -330,26 +353,16 @@ clockApp.filter('roundOff',function(){
     }
 });
 
-    
-    
-    
-    
-    
-    
-    
-//    BUG 1:when setting alarm for current hour and minute, alarm is set for 0 hrs and 0 mins instead of 24 hours
-//    BUG 2:alarm is removed from array as soon as it rings
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
+
+
+
+
+
+

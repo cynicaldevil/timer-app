@@ -17,10 +17,10 @@
             <input type="number" min="0" max="990" step="10" ng-model="milliseconds" ng-disabled="isDisabled">
             <button type="button" ng-click="toggleStartStop()">{{stop|clockState}}</button>
             <button type="button" ng-click="resetTimer()">Reset</button>
-            <p>Remaining Time: {{remsecs|padNumber:2}}:{{remmillisecs%100*10|padNumber:3}}</p> 
+            <p>Remaining Time: {{remsecs|padNumber:2}}:{{remmillisecs%100*10|padNumber:3}}</p>
 
         </div>
-        
+
         <div id="stopwatch" ng-controller="stopwatchController" ng-hide="true">
             Stopwatch
             <p>{{mins|padNumber:2}}:{{secs%60|padNumber:2}}:{{millisecs%1000|padNumber:3}}</p>
@@ -31,7 +31,7 @@
             <div ng-repeat="timeSplit in timeSplitArray|orderBy:'-index'">#{{timeSplit.index}} {{timeSplit.mins|padNumber:2}}:{{(timeSplit.secs)%60|padNumber:2}}:{{(timeSplit.millisecs)%1000|padNumber:3}}</div>
             <div ng-repeat="lap in lapArray|orderBy:'-index'">#{{lap.index}} {{lap.mins|padNumber:2}}:{{(lap.secs)%60|padNumber:2}}:{{(lap.millisecs)%1000|padNumber:3}}</div>
         </div>
-        
+
         <div id="alarm" ng-controller="alarmController">
             Alarm
             <div id="setTime">
@@ -48,22 +48,22 @@
                 </div>
                 <div>
                     {{dayPeriod}}
-                    <button type="button" ng-click="toggleDayPeriod()"><</button>
-                    <button type="button" ng-click="toggleDayPeriod()">></button>
+                    <button type="button" ng-click="toggleDayPeriod()">&#60;</button>
+                    <button type="button" ng-click="toggleDayPeriod()">&gt;</button>
                 </div>
             </div>
             <div id="currentTime">
                 Current Time: {{date}}
             </div>
-                <div class="alarms-list" ng-repeat="alarm in alarms|orderBy:timeDiff">#{{alarm.index}} 
-                    {{alarm.timeDiff/60|roundOff|padNumber:2}} H {{alarm.timeDiff%60}} M
+                <div class="alarms-list" ng-repeat="alarm in alarms|orderBy:timeDiff">#{{alarm.index}}
+                    {{alarm.setTime.hours|roundOff|padNumber:2}} H {{alarm.setTime.mins}} M
                     <button type="button" ng-click="toggleCancelSet(alarm)">{{alarm.stop|alarmState}}</button>
+                    <button type="button" ng-click="deleteAlarm($index)">X</button>
                 </div>
                 <button type="button" ng-click="setAlarm()">Set Alarm</button>
         </div>
     </div>
-        
-    </body>
-    
-</html>
 
+    </body>
+
+</html>
