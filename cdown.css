@@ -4,7 +4,15 @@
 /*    margin:10px;*/
     padding:10px;
 }
+/*
 #alarm{
     display:flex;
+    flex-direction: row;
+}
+*/
+
+
+.alarms-list{
+    display: flex;
     flex-direction: row;
 }

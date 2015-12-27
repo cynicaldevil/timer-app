@@ -19,7 +19,7 @@ clockApp.controller('ctdwnController',['$scope','$timeout','$interval',function(
                                     },true);
     
     $scope.toggleStartStop=function(){                       //called to toggle Start/Stop state of clock
-    if($scope.stop===undefined)
+    if(angular.isUndefined($scope.stop))
         $scope.setTime();
     else
         $scope.stopTimer(); 
@@ -209,35 +209,83 @@ clockApp.controller("alarmController",["$scope","$interval","$timeout","$filter"
         $scope.dayPeriod=$scope.dayPeriod==="AM"?"PM":"AM";
     };
     
-    $scope.setAlarm=function(){
-        $scope.setTime={hours:$scope.hours,
-                        mins:$scope.minutes
-                        };
+    $scope.toggleCancelSet=function(alarm){
+          if(angular.isDefined(alarm.stop))
+              $scope.cancelAlarm(alarm);
+          else
+              $scope.setAlarm(alarm);
+    };
+    
+    $scope.setAlarm=function(alarm){
+        if(angular.isUndefined(alarm))                     //case when new alarm is set
+        {
+            $scope.setTime={hours:$scope.hours,
+                    mins:$scope.minutes
+                   }; 
+
+            $scope.setTime.hours%=12;                    //converting from 12 hour
+            if($scope.dayPeriod==="PM")                  //to a
+                $scope.setTime.hours+=12;                //24 hour format
+        }
+        else                                        //case when an alarm is restarted
+        {
+            $scope.setTime=alarm.setTime;
+            //console.log($scope.setTime.hours);
+        }
+        
         $scope.currentTime={hours:new Date().getHours(),
                             mins:new Date().getMinutes(),
                             secs:new Date().getSeconds(),
                             millisecs:new Date().getMilliseconds(),
                             };
-        
-        $scope.setTime.hours%=12;                    //converting from 12 hour
-        if($scope.dayPeriod==="PM")                  //to a
-            $scope.setTime.hours+=12;                //24 hour format
-        
-        totalSetTimeMins=$scope.setTime.hours*60+$scope.setTime.mins;
         totalCurrentTimeMins=$scope.currentTime.hours*60+$scope.currentTime.mins;
+        totalSetTimeMins=$scope.setTime.hours*60+$scope.setTime.mins;
         timeDiff=((24*60)+totalSetTimeMins-totalCurrentTimeMins)%(24*60);
         
-        $scope.alarms.push({index:$scope.alarms.length+1,
-                               timeDiff:timeDiff,
-                               stop:$timeout(function(){
-                                   console.log("ALARM! #"+$scope.alarms.shift().index)
-                               },(timeDiff*60-$scope.currentTime.secs)*1000-$scope.currentTime.millisecs)});
-                            
-        $scope.alarms.sort(function(a,b){return a.timeDiff-b.timeDiff});
-                            
-        //console.log(Math.floor(timeDiff/60)+" "+timeDiff%60);
+        if(angular.isUndefined(alarm))
+        { 
+            console.log("gstd");
+            $scope.alarms.push({index:++countAlarms,           //insert new alarm object into 'alarms' array
+                       timeDiff:timeDiff,
+                       setTime:$scope.setTime,
+                       stop:$timeout(function(){
+                           console.log("ALARM! #"+this.index);
+                           $scope.cancelAlarm(this)
+                       },(timeDiff*60-$scope.currentTime.secs)*1000-$scope.currentTime.millisecs,true,this)});
+        }
+        else
+        {
+            
+              if(angular.isUndefined(alarm.stop))
+              {
+                  
+                  alarm.timeDiff=timeDiff;
+                  
+                  alarm.stop=$timeout(function(){
+                      console.log("ALARM! #"+alarm.index);
+                      $scope.cancelAlarm(alarm)
+                       },(alarm.timeDiff*60-$scope.currentTime.secs)*1000-$scope.currentTime.millisecs);
+              }
+              
+                  
+        }
         
+
         console.log("Alarm #"+$scope.alarms[$scope.alarms.length-1].index+" has been set for "+Math.floor(timeDiff/60)+" hours and "+timeDiff%60+" minutes from now");
+        $scope.alarms.sort(function(a,b){return a.timeDiff-b.timeDiff});  
+
+    };
+    
+        
+ 
+    $scope.cancelAlarm=function(alarm){
+          if(angular.isDefined(alarm.stop))
+          {
+               $timeout.cancel(alarm.stop);
+               alarm.stop=undefined;
+                console.log("Alarm #"+alarm.index+" with timeDiff "+Math.floor(alarm.timeDiff/60)+" hours and "+alarm.timeDiff%60+" minutes has been cancelled");
+          }
+
     };
     
 }]);
@@ -265,6 +313,16 @@ clockApp.filter('clockState',function(){
     };
 });
 
+//filter for toggling button label of individual button alarm for cancel/restart
+clockApp.filter('alarmState',function(){
+    return function(stop){
+        if(stop===undefined)
+            return "Restart";
+        else
+            return "Cancel";
+    }
+});
+
 //stupid filter because angular won't allow me to call functions in templates
 clockApp.filter('roundOff',function(){
     return function(input){
@@ -279,7 +337,8 @@ clockApp.filter('roundOff',function(){
     
     
     
-    
+//    BUG 1:when setting alarm for current hour and minute, alarm is set for 0 hrs and 0 mins instead of 24 hours
+//    BUG 2:alarm is removed from array as soon as it rings
     
     
     
