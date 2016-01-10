@@ -4,65 +4,83 @@
         <meta charset="utf-8">
         <title>Countdown timer app</title>
         <script type="text/javascript" src="angular.min.js"></script>
+        <script type="text/javascript" src="angular-animate.min.js"></script>
+        <script type="text/javascript" src="jquery-2.2.0.min.js"></script>
         <script type="text/javascript" src="cdown.js"></script>
         <link rel="stylesheet" type="text/css" href="cdown.css">
 
     </head>
     <body>
-    <div ng-app="clock-app">
-        <div id="countdown-timer" ng-controller="ctdwnController" ng-hide="true">
-            Countdown timer
+    <div id="container" ng-app="clock-app">
+        <div id="countdown-timer" class="component" ng-controller="ctdwnController" >
+            <h2>Countdown timer</h2>
             <p>enter no. of seconds</p>
-            <input type="number" min="0" ng-model="seconds" ng-disabled="isDisabled">
-            <input type="number" min="0" max="990" step="10" ng-model="milliseconds" ng-disabled="isDisabled">
-            <button type="button" ng-click="toggleStartStop()">{{stop|clockState}}</button>
-            <button type="button" ng-click="resetTimer()">Reset</button>
-            <p>Remaining Time: {{remsecs|padNumber:2}}:{{remmillisecs%100*10|padNumber:3}}</p>
-
-        </div>
-
-        <div id="stopwatch" ng-controller="stopwatchController" ng-hide="true">
-            Stopwatch
-            <p>{{mins|padNumber:2}}:{{secs%60|padNumber:2}}:{{millisecs%1000|padNumber:3}}</p>
-            <button type="button" ng-click="toggleStartStop()">{{stop|clockState}}</button>
-            <button type="button" ng-click="resetClock()">Reset</button>
-            <button type="button" ng-click="splitTime()" ng-disabled="disableSplit">Split</button>
-            <button type="button" ng-click="startNewLap()" ng-disabled="disableLap">Lap</button>
-            <div ng-repeat="timeSplit in timeSplitArray|orderBy:'-index'">#{{timeSplit.index}} {{timeSplit.mins|padNumber:2}}:{{(timeSplit.secs)%60|padNumber:2}}:{{(timeSplit.millisecs)%1000|padNumber:3}}</div>
-            <div ng-repeat="lap in lapArray|orderBy:'-index'">#{{lap.index}} {{lap.mins|padNumber:2}}:{{(lap.secs)%60|padNumber:2}}:{{(lap.millisecs)%1000|padNumber:3}}</div>
-        </div>
-
-        <div id="alarm" ng-controller="alarmController">
-            Alarm
-            <div id="setTime">
-                <div>
-                    Hours: {{hours|padNumber:2}}
-                    <button type="button" ng-click="incrementHours()">+</button>
-                    <button type="button" ng-click="decrementHours()">-</button>
-                </div>
-
-                <div>
-                    Minutes: {{minutes|padNumber:2}}
-                    <button type="button" ng-click="incrementMinutes()">+</button>
-                    <button type="button" ng-click="decrementMinutes()">-</button>
-                </div>
-                <div>
-                    {{dayPeriod}}
-                    <button type="button" ng-click="toggleDayPeriod()">&#60;</button>
-                    <button type="button" ng-click="toggleDayPeriod()">&gt;</button>
-                </div>
+            <div class="input">
+                <input type="number" min="0" ng-model="seconds" ng-disabled="isDisabled">
+                <input type="number" min="0" max="990" step="10" ng-model="milliseconds" ng-disabled="isDisabled">
             </div>
-            <div id="currentTime">
-                Current Time: {{date}}
-            </div>
-                <div class="alarms-list" ng-repeat="alarm in alarms|orderBy:timeDiff">#{{alarm.index}}
-                    {{alarm.setTime.hours|roundOff|padNumber:2}} H {{alarm.setTime.mins}} M
-                    <button type="button" ng-click="toggleCancelSet(alarm)">{{alarm.stop|alarmState}}</button>
-                    <button type="button" ng-click="deleteAlarm($index)">X</button>
+            <div class="content">
+                <div class="controls">
+                    <button type="button" ng-click="toggleStartStop()">{{stop|clockState}}</button>
+                    <button type="button" ng-click="resetTimer()">Reset</button>
                 </div>
-                <button type="button" ng-click="setAlarm()">Set Alarm</button>
+                <p class="output">Remaining Time: {{remsecs|padNumber:2}}:{{remmillisecs%100*10|padNumber:3}}</p>
+            </div>
         </div>
-    </div>
+
+        <div id="stopwatch" class="component" ng-controller="stopwatchController" >
+            <h2>Stopwatch</h2>
+            <p class="input">{{mins|padNumber:2}}:{{secs%60|padNumber:2}}:{{millisecs%1000|padNumber:3}}</p>
+
+            <div class="controls">
+                <button type="button" ng-click="toggleStartStop()">{{stop|clockState}}</button>
+                <button type="button" ng-click="resetClock()">Reset</button>
+                <button type="button" ng-click="splitTime()" ng-disabled="disableSplit">Split</button>
+                <button type="button" ng-click="startNewLap()" ng-disabled="disableLap">Lap</button>
+            </div>
+            <div ng-repeat="timeSplit in timeSplitArray|orderBy:'-index'" class="output">#{{timeSplit.index}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{timeSplit.mins|padNumber:2}}:{{(timeSplit.secs)%60|padNumber:2}}:{{(timeSplit.millisecs)%1000|padNumber:3}}</div>
+            <div ng-repeat="lap in lapArray|orderBy:'-index'" class="output">#{{lap.index}} {{lap.mins|padNumber:2}}:{{(lap.secs)%60|padNumber:2}}:{{(lap.millisecs)%1000|padNumber:3}}</div>
+        </div>
+
+        <div id="alarm" class="component" ng-controller="alarmController">
+            <h2>Alarm</h2>
+
+          <div id="setTime" class="input">
+              <div class="time-fields">
+                  Hours: <span class="enterTime">{{hours|padNumber:2}}</span>
+                  <button type="button" ng-click="incrementHours()">+</button>
+                  <button type="button" ng-click="decrementHours()">-</button>
+              </div>
+
+              <div class="time-fields">
+                  Minutes: <span class="enterTime">{{minutes|padNumber:2}}</span>
+                  <button type="button" ng-click="incrementMinutes()">+</button>
+                  <button type="button" ng-click="decrementMinutes()">-</button>
+              </div>
+              <div class="time-fields">
+                  <span class="enterTime">{{dayPeriod}}</span>
+                  <button type="button" ng-click="toggleDayPeriod()">&#60;</button>
+                  <button type="button" ng-click="toggleDayPeriod()">&gt;</button>
+              </div>
+          </div>
+          <div class="content">
+              <div id="currentTime" class="input">
+                  Current Time: {{date}}
+              </div>
+
+              <div class="controls">
+                  <button type="button" ng-click="setAlarm()">Set Alarm</button>
+              </div>
+
+              <div class="alarms-list output" ng-repeat="alarm in alarms|orderBy:timeDiff">#{{alarm.index}}
+                  {{alarm.setTime.hours|roundOff|padNumber:2}} H {{alarm.setTime.mins}} M
+                  <button type="button" ng-click="toggleCancelSet(alarm)">{{alarm.stop|alarmState}}</button>
+                  <button type="button" ng-click="deleteAlarm($index)">X</button>
+              </div>
+
+              </div>
+            </div>
+        </div>
 
     </body>
 

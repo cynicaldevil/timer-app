@@ -1,5 +1,5 @@
 
-var clockApp=angular.module('clock-app',[]);
+var clockApp=angular.module('clock-app',['ngAnimate']);
 
 
 //controller for countdown timer
@@ -294,7 +294,7 @@ clockApp.controller("alarmController",["$scope","$interval","$timeout","$filter"
         $timeout.cancel(alarm.stop);
     console.log("Alarm #"+alarm.index+" with timeDiff "+timeString(alarm.timeDiff)+" has been deleted");
     };
-    
+
     var timeString=function(timeDiff)
     {
         if(timeDiff===0)
@@ -353,16 +353,68 @@ clockApp.filter('roundOff',function(){
     }
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+//animation module
+// clockApp.animation('.output', function() {
+//   return {
+//     // enter : function(element, done) {
+//     //   console.log("qwert");
+//     //   element.css('opacity',0);
+//     //   jQuery(element).animate({
+//     //     opacity:1
+//     //   }, done);
+//
+//     // enter : function(element,done) {
+//     //       console.log("qwervt");
+//     //     var output=jQuery('#stopwatch .content .output');
+//     //     output.css('top', '0px');
+//     //     jQuery(output).animate({
+//     //         top: '50px'
+//     //     },done);
+//
+//
+//
+//       // optional onDone or onCancel callback
+//       // function to handle any post-animation
+//       // cleanup operations
+//       return function(isCancelled) {
+//         if(isCancelled) {
+//           jQuery(element).stop();
+//         }
+//       }
+//     },
+//     leave : function(element, done) {
+//       element.css('opacity', 1);
+//       jQuery(element).animate({
+//         opacity: 0
+//       }, done);
+//
+//       // optional onDone or onCancel callback
+//       // function to handle any post-animation
+//       // cleanup operations
+//       return function(isCancelled) {
+//         if(isCancelled) {
+//           jQuery(element).stop();
+//         }
+//       }
+//     },
+//     move : function(element, done) {
+//       element.css('opacity', 0);
+//       jQuery(element).animate({
+//         opacity: 1
+//       }, done);
+//
+//       // optional onDone or onCancel callback
+//       // function to handle any post-animation
+//       // cleanup operations
+//       return function(isCancelled) {
+//         if(isCancelled) {
+//           jQuery(element).stop();
+//         }
+//       }
+//     },
+//
+//     // you can also capture these animation events
+//     addClass : function(element, className, done) {},
+//     removeClass : function(element, className, done) {}
+//   }
+// });
