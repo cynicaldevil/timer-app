@@ -193,6 +193,42 @@ clockApp.controller("alarmController",["$scope","$interval","$timeout","$filter"
         $scope.hours=++$scope.hours>12?1:$scope.hours;
     };
 
+    var promise;
+    $scope.mousedown=function(timeUnit, sign) {
+        if(promise==undefined)
+        {
+            var func;
+            if(timeUnit==="hours")
+            {
+                if(sign==="+")
+                    func=function() {$scope.incrementHours() };
+                else if(sign==='-')
+                    func=function() {$scope.decrementHours() };
+            }
+            else if(timeUnit==="minutes")
+            {
+                if(sign==='+')
+                    func= function() {$scope.incrementMinutes() };
+                else if(sign==='-')
+                    func= function() {$scope.decrementMinutes() };
+            }
+            else if(timeUnit==="dayPeriod")
+                func= function() {$scope.toggleDayPeriod() };
+
+            promise=$interval(function(){
+                func();
+            },100);
+        }
+    };
+
+    $scope.mouseup=function(){
+        if(promise!==undefined)
+        {
+            $interval.cancel(promise);
+            promise=undefined;
+        }
+    };
+
     $scope.decrementHours=function(){
         $scope.hours=--$scope.hours<=0?12:$scope.hours;
     };
@@ -270,7 +306,7 @@ clockApp.controller("alarmController",["$scope","$interval","$timeout","$filter"
 
 
         console.log("Alarm #"+$scope.alarms[$scope.alarms.length-1].index+" has been set for "+timeString(alarm.timeDiff)+" from now");
-        $scope.alarms.sort(function(a,b){return a.timeDiff-b.timeDiff});
+        //$scope.alarms.sort(function(a,b){return a.timeDiff-b.timeDiff});
 
     };
 
@@ -340,16 +376,18 @@ clockApp.filter('clockState',function(){
 clockApp.filter('alarmState',function(){
     return function(stop){
         if(stop===undefined)
-            return "Restart";
+            return "RESTART";
         else
-            return "Cancel";
+            return "CANCEL";
     }
 });
 
-//stupid filter because angular won't allow me to call functions in templates
-clockApp.filter('roundOff',function(){
+//filter for rounding off and converting 24 hr time to 12 hr time
+clockApp.filter('formatHours',function(){
     return function(input){
-        return Math.floor(input);
+        input= Math.floor(input);
+        input=(input===12||input===0)?12:input%12;
+        return input;
     }
 });
 

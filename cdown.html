@@ -3,11 +3,13 @@
     <head>
         <meta charset="utf-8">
         <title>Countdown timer app</title>
+        <script type="text/javascript" src="jquery-2.2.0.min.js"></script>
         <script type="text/javascript" src="angular.min.js"></script>
         <script type="text/javascript" src="angular-animate.min.js"></script>
-        <script type="text/javascript" src="jquery-2.2.0.min.js"></script>
         <script type="text/javascript" src="cdown.js"></script>
         <link rel="stylesheet" type="text/css" href="cdown.css">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
 
     </head>
     <body>
@@ -47,38 +49,65 @@
 
           <div id="setTime" class="input">
               <div class="time-fields">
-                  Hours: <span class="enterTime">{{hours|padNumber:2}}</span>
-                  <button type="button" ng-click="incrementHours()">+</button>
-                  <button type="button" ng-click="decrementHours()">-</button>
+                  HH&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  <div id="hours">
+                      <span class="enterTime">{{hours|padNumber:2}}</span>
+                      <div class="change-set-time">
+
+                          <button class="inc-icon" type="button" ng-click="incrementHours()" ng-mousedown="mousedown('hours','+')" ng-mouseup="mouseup()" ng-mouseleave="mouseup()"><i class="material-icons inc-icon">add</i></button>
+
+                          <button class="dec-icon" type="button" ng-click="decrementHours()" ng-mousedown="mousedown('hours','-')" ng-mouseup="mouseup() "ng-mouseleave="mouseup()" ><i class="material-icons dec-icon">remove</i></button>
+                      </div>
+                  </div>
               </div>
 
               <div class="time-fields">
-                  Minutes: <span class="enterTime">{{minutes|padNumber:2}}</span>
-                  <button type="button" ng-click="incrementMinutes()">+</button>
-                  <button type="button" ng-click="decrementMinutes()">-</button>
+                  MM&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  <div id="minutes">
+                      <span class="enterTime">{{minutes|padNumber:2}}</span>
+                      <div class="change-set-time">
+
+                          <button class="inc-icon" type="button" ng-click="incrementMinutes()" ng-mousedown="mousedown('minutes','+')"  ng-mouseup="mouseup()" ng-mouseleave="mouseup()"><i class="material-icons inc-icon">add</i></button>
+
+                          <button class="dec-icon" type="button" ng-click="decrementMinutes()" ng-mousedown="mousedown('minutes','-')"  ng-mouseup="mouseup()" ng-mouseleave="mouseup()"><i class="material-icons dec-icon">remove</i></button>
+                      </div>
+                  </div>
               </div>
               <div class="time-fields">
-                  <span class="enterTime">{{dayPeriod}}</span>
-                  <button type="button" ng-click="toggleDayPeriod()">&#60;</button>
-                  <button type="button" ng-click="toggleDayPeriod()">&gt;</button>
+                   &nbsp;
+                  <div id="dayperiod">
+                      <span class="enterTime">{{dayPeriod}}</span>
+                      <div class="change-set-time">
+
+                          <button class="inc-icon" type="button" ng-click="toggleDayPeriod()"><i class="material-icons inc-icon">keyboard_arrow_up</i></button>
+
+                          <button class="dec-icon" type="button" ng-click="toggleDayPeriod()"><i class="material-icons dec-icon">keyboard_arrow_down</i></button>
+
+                      </div>
+                  </div>
               </div>
           </div>
           <div class="content">
-              <div id="currentTime" class="input">
+              <div id="currentTime">
                   Current Time: {{date}}
               </div>
 
               <div class="controls">
-                  <button type="button" ng-click="setAlarm()">Set Alarm</button>
+                  <button type="button" ng-click="setAlarm()"><span>Set Alarm</span</button>
+              </div>
+          </div>
+
+              <div class="alarms-list output" ng-repeat="alarm in alarms">
+                  <div class="time output">
+                      <span class="alarm-index">#{{alarm.index}}</span>
+                      {{alarm.setTime.hours|formatHours|padNumber:2}}:{{alarm.setTime.mins|padNumber:2}} {{(alarm.setTime.hours>=12) ? 'PM' : 'AM'}}
+                  </div>
+                  <button type="button" class="cancel" ng-click="toggleCancelSet(alarm)">{{alarm.stop|alarmState}}</button>
+                  <!-- <button class="cancel-icon" type="button" ng-click="deleteAlarm($index)"><i class="material-icons cancel-icon">clear</i></button> -->
+                  <button class="delete-icon material-icons" type="button" ng-click="deleteAlarm($index)">clear</button>
               </div>
 
-              <div class="alarms-list output" ng-repeat="alarm in alarms|orderBy:timeDiff">#{{alarm.index}}
-                  {{alarm.setTime.hours|roundOff|padNumber:2}} H {{alarm.setTime.mins}} M
-                  <button type="button" ng-click="toggleCancelSet(alarm)">{{alarm.stop|alarmState}}</button>
-                  <button type="button" ng-click="deleteAlarm($index)">X</button>
-              </div>
 
-              </div>
             </div>
         </div>
 
