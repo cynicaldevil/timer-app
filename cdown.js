@@ -5,6 +5,8 @@ var clockApp=angular.module('clock-app',['ngAnimate']);
 //controller for countdown timer
 clockApp.controller('ctdwnController',['$scope','$timeout','$interval',function($scope,$timeout,$interval){
     $scope.clockState="Start";
+    $scope.minutes=0;
+    $scope.remmins=0;
     $scope.seconds=0;
     $scope.remsecs=0;
     $scope.milliseconds=0;
@@ -13,7 +15,77 @@ clockApp.controller('ctdwnController',['$scope','$timeout','$interval',function(
     $scope.stop;
     $scope.isDisabled=false;
 
-    $scope.$watch(function(){return [$scope.seconds,$scope.milliseconds];},function(){$scope.remsecs=$scope.seconds;
+//handles mouse events
+    var promise=undefined;
+    $scope.mousedown=function(timeUnit,sign) {
+        if(promise===undefined)
+        {
+            var func;
+            if(timeUnit==='seconds')
+            {
+                func=function(){ $scope.changeSeconds(sign) };
+            }
+            else if(timeUnit==='millisecs')
+            {
+                func=function() { $scope.changeMillisecs(sign) };
+            }
+            else if(timeUnit==='minutes')
+            {
+                func=function() { $scope.changeMinutes(sign) };
+            }
+
+            promise=$interval(function() {
+                func();
+            },timeUnit==='millisecs'?20:100);
+        }
+    };
+
+    $scope.mouseup= function() {
+        if(promise!==undefined)
+        {
+            $interval.cancel(promise);
+            promise=undefined;
+        }
+    };
+
+    $scope.changeMinutes=function(sign) {
+        if(sign==='+')
+            $scope.minutes++;
+        else if(sign==='-' && $scope.minutes>0)
+            $scope.minutes--;
+    };
+
+    $scope.changeSeconds=function(sign) {
+        if(sign==='+')
+        {
+            $scope.seconds++;
+            $scope.seconds%=60;
+        }
+        else if(sign==='-')
+        {
+            $scope.seconds--;
+            $scope.seconds+=60;
+            $scope.seconds%=60;
+        }
+    };
+
+    $scope.changeMillisecs=function(sign) {
+        if(sign==='+')
+        {
+            $scope.milliseconds+=10;
+            $scope.milliseconds%=1000;
+        }
+        else if(sign==='-')
+            $scope.milliseconds-=10;
+            $scope.milliseconds+=1000;
+            $scope.milliseconds%=1000;
+    };
+
+
+
+    $scope.$watch(function(){return [$scope.minutes,$scope.seconds,$scope.milliseconds];},function(){
+                                     $scope.remmins=$scope.minutes;
+                                     $scope.remsecs=$scope.seconds;
                                      $scope.remmillisecs=$scope.milliseconds/10;
                                      currentCycle=undefined;                  //corner case: when time is changed after pausing
                                     },true);
@@ -28,8 +100,9 @@ clockApp.controller('ctdwnController',['$scope','$timeout','$interval',function(
     $scope.setTime=function(){
         if(angular.isUndefined(currentCycle))
         {
-            $scope.remmillisecs=($scope.seconds)*100+($scope.milliseconds/10);
-            $scope.remsecs=$scope.remmillisecs/100;
+            $scope.remmillisecs=($scope.minutes)*100*60 + ($scope.seconds)*100 + ($scope.milliseconds/10);
+            $scope.remsecs=($scope.remmillisecs/100)%60;
+            $scope.remmmins=$scope.remsecs/(60*100);
             currentCycle="running";
         }
         $scope.startTimer();
@@ -44,7 +117,8 @@ clockApp.controller('ctdwnController',['$scope','$timeout','$interval',function(
                 if($scope.remmillisecs>0)
                 {
                     $scope.remmillisecs--;
-                    $scope.remsecs=Math.floor($scope.remmillisecs/100);
+                    $scope.remsecs=Math.floor(($scope.remmillisecs/100)%60);
+                    $scope.remmins=Math.floor($scope.remmillisecs/(60*100));
                 }
                 else
                 {
@@ -68,9 +142,9 @@ clockApp.controller('ctdwnController',['$scope','$timeout','$interval',function(
 
         currentCycle=undefined;
             $scope.stopTimer();
-            $scope.remmillisecs=($scope.seconds)*100+($scope.milliseconds/10);
-            $scope.remsecs=Math.floor($scope.remmillisecs/100);
-
+            $scope.remmillisecs=($scope.minutes)*100*60 + ($scope.seconds)*100 + ($scope.milliseconds/10);
+            $scope.remsecs=Math.floor($scope.remmillisecs/100)%60;
+            $scope.remmins=Math.floor($scope.remmillisecs/(60*100))%(60*100);
     };
 
     $scope.$on('$destroy', function() {
@@ -189,10 +263,6 @@ clockApp.controller("alarmController",["$scope","$interval","$timeout","$filter"
         $scope.date=$filter('date')(new Date(),'mediumTime');
     },1000);
 
-    $scope.incrementHours=function(){
-        $scope.hours=++$scope.hours>12?1:$scope.hours;
-    };
-
     var promise;
     $scope.mousedown=function(timeUnit, sign) {
         if(promise==undefined)
@@ -227,6 +297,10 @@ clockApp.controller("alarmController",["$scope","$interval","$timeout","$filter"
             $interval.cancel(promise);
             promise=undefined;
         }
+    };
+
+    $scope.incrementHours=function(){
+        $scope.hours=++$scope.hours>12?1:$scope.hours;
     };
 
     $scope.decrementHours=function(){
@@ -328,7 +402,9 @@ clockApp.controller("alarmController",["$scope","$interval","$timeout","$filter"
         var alarm=alarmarr[0];
         console.log("alarm"+alarm);
         $timeout.cancel(alarm.stop);
-    console.log("Alarm #"+alarm.index+" with timeDiff "+timeString(alarm.timeDiff)+" has been deleted");
+        console.log("Alarm #"+alarm.index+" with timeDiff "+timeString(alarm.timeDiff)+" has been deleted");
+        if($scope.alarms.length===0)
+            countAlarms=0;
     };
 
     var timeString=function(timeDiff)

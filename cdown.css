@@ -2,8 +2,35 @@
 @import url(https://fonts.googleapis.com/css?family=Roboto:900);
 @import url(https://fonts.googleapis.com/css?family=Oswald:400,700);
 
+
+
+body{
+/*     position:relative; */
+}
+#cover1{
+    top:0px;
+    left:0px;
+    position:absolute;
+    border:1px solid black;
+    z-index:100;
+    background-color:white;
+    width:22%;;
+    height:100%;
+}
+
+#cover2{
+    top:0px;
+    right:0px;
+    position:absolute;
+    border:1px solid black;
+    z-index:100;
+    background-color:white;
+    width:22%;;
+    height:100%;
+}
+
 #container{
-    width:1700px;;
+    width:100%;
     margin-top:0px;
     display:flex;
     flex-flow:row nowrap;
@@ -21,6 +48,7 @@ button:hover{
     width:500px;
 /*     border:2px solid black; */
     margin:10px;
+
     display:flex;
     flex-flow: column nowrap;
     justify-content: space-between;
@@ -33,6 +61,7 @@ button:hover{
 }
 
 .input,.output,.controls{
+
     display:flex;
     flex-flow:row nowrap;
     justify-content: space-around;
@@ -40,6 +69,7 @@ button:hover{
 }
 
 .input{
+
     background-color:white;
 }
 
@@ -74,25 +104,130 @@ button{
 
 /*------------Countdown timer-----------------*/
 
-#countdown-timer .input input{
-    width:150px;
+#countdown-timer{
+    
+    order:0;                        /*changed dynamically*/
+    
+    color:	#80ff00	;
+}
+
+#countdown-timer .input #minutes,#countdown-timer .input #seconds,#countdown-timer .input #millisecs{
+/*     width:150px; */
     height:100px;
-    font-size:80px;
+    display:flex;
+    flex-flow: row nowrap;
     text-align:center;
     style:none;
     border=10px solid black;
     border-radius:10px;
 }
 
-#countdown-timer .content{
-    background-color: #0E0;
+#countdown-timer .input div span{
+    padding-right:7px;
 }
+
+
+#countdown-timer .input > div {
+    display:flex;
+    flex-flow:row nowrap;
+    margin:10px;
+    margin-bottom:25px;
+    font-size:80px;
+    height:200px;
+}
+
+#countdown-timer .change-set-time {
+    display:flex;
+    flex-flow:column nowrap;
+    justify-content: center;
+}
+
+#countdown-timer .change-set-time button{
+    display:flex;
+    flex-flow:column nowrap;
+    justify-content: center;
+    width:35px;
+    height:35px;
+    margin-top:5px;
+    margin-bottom:5px;
+    
+    border-radius:8px;
+    background-color: rgba(128, 255, 0, 0.40);
+}
+
+#countdown-timer .change-set-time button:hover{
+    background-color: rgba(128, 255, 0, 0.7);
+}
+
+#countdown-timer .change-set-time button i{
+    color: hsl(90, 100%, 40%);
+/*     color:#80ff00; */
+    font-size:18px;
+/*     color:red; */
+}
+
+
+#countdown-timer .content{
+    display:flex;
+    flex-flow:column nowrap;
+    align-items: center;
+    justify-content:space-around;
+    background-color:#80ff00;
+    border-bottom-left-radius: 5px ;
+    border-bottom-right-radius: 5px ;
+    
+    box-shadow:7px 7px rgba(128, 255, 0, 0.5);
+}
+
+#countdown-timer .content .controls{
+    display:flex;
+    justify-content:center;
+    margin:10px;
+    margin-bottom:30px;
+}
+
+#countdown-timer .content .controls button{
+    font-family: 'Oswald', sans-serif;
+    padding:1px;
+    padding-left:15px;
+    padding-right:15px;
+    font-size:28px;
+    font-weight:700;
+    color:white;
+    margin-left:10px;
+    margin-right:10px;
+    background-color: rgba(255, 255, 255, 0.40);
+    border:2px solid rgba(255,255,255,0);
+}
+
+#countdown-timer .content .controls button:hover{
+    border:2px solid white;
+}
+
+#countdown-timer .content p.output.text{
+    font-size:18px;
+    color:white;
+    margin:0px;
+}
+
+
+#countdown-timer .content p.output.time-actual {
+    width:90%;
+    background-color: white;
+    border-radius:10px;
+    font-size:80px;
+}
+
+
 
 /*-----------------------------------------*/
 
 /*---------------STOPWATCH----------------*/
 
 #stopwatch{
+    
+    order:1;                         /*changed dynamically*/
+    
     color: rgb(240,189,15);
 }
 
@@ -224,8 +359,11 @@ button{
 /*-----------ALARM---------------------*/
 
 #alarm{
-    color:#3d88dc;
     
+    order:2;                         /*changed dynamically*/
+    
+    color:#3d88dc;
+
 }
 
 #alarm .input{
@@ -241,14 +379,14 @@ button{
     font-size:70px;
 /*     padding-top:5px; */
     padding:10px;
-    
+
 }
 
 #alarm #dayperiod .enterTime{
     padding-top:19px;
     vertical-align: middle;
     font-size: 55px;
-    
+
 }
 
 
@@ -291,12 +429,12 @@ button{
 /*     align-items: stretch; */
 }
 
-#alarm .time-fields #hours,#minutes,#dayperiod {
-    font-size:70px;
+#alarm div.time-fields #hours,#minutes,#dayperiod {
+    font-size:90px;
 /*     border:1px solid black; */
     display: flex;
     flex-flow:row nowrap;
-    
+
 }
 
 
@@ -350,17 +488,21 @@ button{
 }
 
 #alarm .content button:hover{
-    background-color:rgba(212, 229, 247,0.35); 
+    background-color:rgba(212, 229, 247,0.35);
     border:3px solid white;
 }
 #alarm .content button span{
 /*             border: 1px solid black; */
     padding:10px;
     margin:10px;
-    
+
 }
 
 #alarm .output{
+    -webkit-transition:0.2s linear all;
+    -moz-transition:0.2s linear all;
+    -o-transition:0.2s linear all;
+    transition:0.2s linear all;
     background-color:rgb(126, 177, 231);
     color:white;
     display: flex;
@@ -371,6 +513,35 @@ button{
     padding:4px;
     margin-top:15px;
     margin-bottom:0px;
+}
+
+#alarm .output.ng-enter{
+
+    position:absolute;
+    top:-100px;
+    z-index:-1;
+/*     position:absolute; */
+/*       -webkit-animation:0.5s my_animation;
+  -moz-animation:0.5s my_animation;
+  -o-animation:0.5s my_animation;
+  animation:0.5s my_animation; */
+  opacity:0;
+}
+
+#alarm .output.ng-enter.ng-enter-active {
+    z-index:1;
+  opacity:1;
+    top:0px;
+    position:relative;
+/*   background-color: black; */
+}
+
+#alarm .output.ng-leave{
+    opacity:1;
+}
+
+#alarm .output.ng-leave.ng-leave-active {
+    opacity:0;
 }
 
 #alarm .output button{
@@ -415,7 +586,7 @@ button{
     height:15px;
     width:15px;
     text-align: center;
-    
+
 }
 
 #alarm button.delete-icon:hover {
@@ -425,7 +596,7 @@ button{
 }
 
 #stopwatch .output,.alarms-list{
-    
+
     position: relative;
     background-color:rgb(240,189,15);
     padding:4px;
