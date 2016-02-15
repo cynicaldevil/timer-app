@@ -5,7 +5,7 @@
         <title>Countdown timer app</title>
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular.min.js"></script>
-        <script type="text/javascript" src="angular-animate.min.js"></script>
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.min.js"></script>
         <script type="text/javascript" src="animations.js"></script>
         <script type="text/javascript" src="cdown.js"></script>
 
@@ -25,9 +25,6 @@
         <div id="countdown-timer" class="component" ng-controller="ctdwnController" >
             <h2>Countdown timer</h2>
             <div class="input">
-
-                <!-- <input type="number" min="0" ng-model="seconds" ng-disabled="isDisabled">
-                <input type="number" min="0" max="990" step="10" ng-model="milliseconds" ng-disabled="isDisabled"> -->
 
                 <div id="minutes">
                     <span class="enterTime">{{minutes|padNumber:2}}</span>
