@@ -1,6 +1,6 @@
 
 var clockApp=angular.module('clock-app',['ngAnimate']);
-
+var audio = new Audio('alarm_sound.mp3');
 
 //controller for countdown timer
 clockApp.controller('ctdwnController',['$scope','$timeout','$interval',function($scope,$timeout,$interval){
@@ -122,6 +122,7 @@ clockApp.controller('ctdwnController',['$scope','$timeout','$interval',function(
                 }
                 else
                 {
+                    audio.play();
                     $scope.stopTimer();
                     currentCycle=undefined;
                 }
@@ -139,7 +140,6 @@ clockApp.controller('ctdwnController',['$scope','$timeout','$interval',function(
     };
 
     $scope.resetTimer=function(){
-
         currentCycle=undefined;
             $scope.stopTimer();
             $scope.remmillisecs=($scope.minutes)*100*60 + ($scope.seconds)*100 + ($scope.milliseconds/10);
@@ -172,7 +172,6 @@ clockApp.controller('stopwatchController',['$scope','$interval',function($scope,
             $scope.startClock();
         else
             $scope.stopClock();
-
     };
 
     $scope.startClock=function(){
@@ -182,7 +181,6 @@ clockApp.controller('stopwatchController',['$scope','$interval',function($scope,
                 $scope.secs=Math.floor($scope.millisecs/1000);
                 $scope.mins=Math.floor($scope.secs/60);
             },10);
-
         }
     };
 
@@ -204,7 +202,6 @@ clockApp.controller('stopwatchController',['$scope','$interval',function($scope,
         $scope.disableSplit=false;
         countSplit=0;
         countLap=0;
-        console.log($scope.timeSplitArray);
     };
 
     $scope.splitTime=function(){
@@ -217,7 +214,6 @@ clockApp.controller('stopwatchController',['$scope','$interval',function($scope,
                                         millisecs:$scope.millisecs
                                        });
         }
-
     };
 
     $scope.startNewLap=function()
@@ -241,8 +237,6 @@ clockApp.controller('stopwatchController',['$scope','$interval',function($scope,
     $scope.$on('$destroy', function() {
         $scope.stopTimer();
     });
-
-
 }]);
 
 //controller for alarm
@@ -332,15 +326,20 @@ clockApp.controller("alarmController",["$scope","$interval","$timeout","$filter"
             $scope.setTime={hours:$scope.hours,
                     mins:$scope.minutes
                    };
-
             $scope.setTime.hours%=12;                    //converting from 12 hour
             if($scope.dayPeriod==="PM")                  //to a
                 $scope.setTime.hours+=12;                //24 hour format
+
+            var alarm={index:++countAlarms,           //insert new alarm object into 'alarms' array
+                       timeDiff:timeDiff,
+                       setTime:$scope.setTime};
+            $scope.alarms.push(alarm);
         }
         else                                        //case when an alarm is restarted
         {
+            $(document.getElementById('alarm_id'+alarm.index)).removeClass('alarm-ringing');
+            document.getElementById('alarm_id'+alarm.index).innerHTML='alarm_on';
             $scope.setTime=alarm.setTime;
-            //console.log($scope.setTime.hours);
         }
 
         $scope.currentTime={hours:new Date().getHours(),
@@ -351,44 +350,19 @@ clockApp.controller("alarmController",["$scope","$interval","$timeout","$filter"
         totalCurrentTimeMins=$scope.currentTime.hours*60+$scope.currentTime.mins;
         totalSetTimeMins=$scope.setTime.hours*60+$scope.setTime.mins;
         timeDiff=((24*60)+totalSetTimeMins-totalCurrentTimeMins-1)%(24*60);
-
-        if(angular.isUndefined(alarm))
-        {
-            //console.log("gstd");
-            var alarm={index:++countAlarms,           //insert new alarm object into 'alarms' array
-                       timeDiff:timeDiff,
-                       setTime:$scope.setTime};
-
-            alarm.stop=$timeout(function(){
-                           console.log("ALARM! #"+alarm.index);
-                           $scope.cancelAlarm(alarm)
-                       },((timeDiff+1)*60-$scope.currentTime.secs)*1000-$scope.currentTime.millisecs);
-
-            $scope.alarms.push(alarm);
-        }
-        else
-        {
-              if(angular.isUndefined(alarm.stop))
-              {
-                  alarm.timeDiff=timeDiff;
-                  alarm.stop=$timeout(function(){
-                      console.log("ALARM! #"+alarm.index);
-                      $scope.cancelAlarm(alarm)
-                      },((alarm.timeDiff+1)*60-$scope.currentTime.secs)*1000-$scope.currentTime.millisecs);
-              }
-        }
-
-
+        alarm.timeDiff=timeDiff;
+        alarm.stop=$timeout(function(){
+                       audio.play();
+                       console.log("ALARM! #"+alarm.index);
+                       $(document.getElementById('alarm_id'+alarm.index)).addClass('alarm-ringing');
+                       $scope.cancelAlarm(alarm);
+                   },((alarm.timeDiff+1)*60-$scope.currentTime.secs)*1000-$scope.currentTime.millisecs);
         console.log("Alarm #"+$scope.alarms[$scope.alarms.length-1].index+" has been set for "+timeString(alarm.timeDiff)+" from now");
-        //$scope.alarms.sort(function(a,b){return a.timeDiff-b.timeDiff});
-
     };
 
     $scope.cancelAlarm=function(alarm){
-
           if(angular.isDefined(alarm.stop))
           {
-              //console.log("sdg");
                $timeout.cancel(alarm.stop);
                alarm.stop=undefined;
                 console.log("Alarm #"+alarm.index+" with timeDiff "+timeString(alarm.timeDiff)+" has been cancelled");
@@ -396,15 +370,22 @@ clockApp.controller("alarmController",["$scope","$interval","$timeout","$filter"
     };
 
     $scope.deleteAlarm=function($index){
-
-        console.log("$index:"+$index);
         var alarmarr=$scope.alarms.splice($index,1);
         var alarm=alarmarr[0];
-        console.log("alarm"+alarm);
         $timeout.cancel(alarm.stop);
         console.log("Alarm #"+alarm.index+" with timeDiff "+timeString(alarm.timeDiff)+" has been deleted");
         if($scope.alarms.length===0)
             countAlarms=0;
+    };
+
+    $scope.stopAlarmSound=function(alarm)
+    {
+        if(angular.isUndefined(alarm.stop))
+        {
+            $(document.getElementById('alarm_id'+alarm.index)).removeClass('alarm-ringing');
+            document.getElementById('alarm_id'+alarm.index).innerHTML='alarm_off';
+            audio.pause();
+        }
     };
 
     var timeString=function(timeDiff)
@@ -421,7 +402,6 @@ clockApp.controller("alarmController",["$scope","$interval","$timeout","$filter"
         for(alarm of $scope.alarms)
             $scope.cancel(alarm.stop);
     });
-
 
 }]);
 
@@ -466,69 +446,3 @@ clockApp.filter('formatHours',function(){
         return input;
     }
 });
-
-//animation module
-// clockApp.animation('.output', function() {
-//   return {
-//     // enter : function(element, done) {
-//     //   console.log("qwert");
-//     //   element.css('opacity',0);
-//     //   jQuery(element).animate({
-//     //     opacity:1
-//     //   }, done);
-//
-//     // enter : function(element,done) {
-//     //       console.log("qwervt");
-//     //     var output=jQuery('#stopwatch .content .output');
-//     //     output.css('top', '0px');
-//     //     jQuery(output).animate({
-//     //         top: '50px'
-//     //     },done);
-//
-//
-//
-//       // optional onDone or onCancel callback
-//       // function to handle any post-animation
-//       // cleanup operations
-//       return function(isCancelled) {
-//         if(isCancelled) {
-//           jQuery(element).stop();
-//         }
-//       }
-//     },
-//     leave : function(element, done) {
-//       element.css('opacity', 1);
-//       jQuery(element).animate({
-//         opacity: 0
-//       }, done);
-//
-//       // optional onDone or onCancel callback
-//       // function to handle any post-animation
-//       // cleanup operations
-//       return function(isCancelled) {
-//         if(isCancelled) {
-//           jQuery(element).stop();
-//         }
-//       }
-//     },
-//     move : function(element, done) {
-//       element.css('opacity', 0);
-//       jQuery(element).animate({
-//         opacity: 1
-//       }, done);
-//
-//       // optional onDone or onCancel callback
-//       // function to handle any post-animation
-//       // cleanup operations
-//       return function(isCancelled) {
-//         if(isCancelled) {
-//           jQuery(element).stop();
-//         }
-//       }
-//     },
-//
-//     // you can also capture these animation events
-//     addClass : function(element, className, done) {},
-//     removeClass : function(element, className, done) {}
-//   }
-// });

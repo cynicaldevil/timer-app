@@ -5,39 +5,62 @@
 
 
 body{
-/*     position:relative; */
-}
-#cover1{
-    top:0px;
-    left:0px;
-    position:absolute;
-    border:1px solid black;
-    z-index:100;
-    background-color:white;
-    width:22%;;
-    height:100%;
+    display:flex;
+    flex-flow:column nowrap;
+    justify-content:center;
+    align-items:center;
 }
 
-#cover2{
-    top:0px;
-    right:0px;
-    position:absolute;
-    border:1px solid black;
-    z-index:100;
-    background-color:white;
-    width:22%;;
-    height:100%;
+#select-component {
+    margin-top:20px;
+  width:600px;
+  height:30px;
+  display:flex;
+  flex-flow:row nowrap;
+  justify-content:center;
+    align-items:center;
+}
+#select-component button {
+    color:white;
+    font-family: 'Roboto', sans-serif;
+    font-size:19px;
+    flex-basis:33%;
+    padding:0px;
+    padding-top:13px;
+    padding-bottom:13px;
+    margin:3px;
+}
+
+#select-component button:focus {
+    border:2px solid black;
+}
+
+#select-component .countdown-timer {
+    style:none;
+    background-color: rgb(128, 255, 0);
+}
+
+#select-component .stopwatch {
+    style:none;
+    background-color: 	rgb(240,189,15);
+}
+
+#select-component .alarm {
+    style:none;
+    background-color:#3d88dc;
 }
 
 #container{
-    width:100%;
+    position:relative;
+    height:500px;
+    width:500px;
     margin-top:0px;
     display:flex;
     flex-flow:row nowrap;
     justify-content: center;
-    align-items:flex-start;
+    align-items: flex-start;
     font-family: 'Roboto', sans-serif;
-    border:1px solid black;
+/*     border:1px solid black; */
 }
 
 button:hover{
@@ -45,10 +68,13 @@ button:hover{
 }
 
 .component{
+    top:0px;
+    left:0px;
+    position:absolute;
     width:500px;
 /*     border:2px solid black; */
     margin:10px;
-
+    padding-bottom:50px;
     display:flex;
     flex-flow: column nowrap;
     justify-content: space-between;
@@ -105,9 +131,8 @@ button{
 /*------------Countdown timer-----------------*/
 
 #countdown-timer{
-    
     order:0;                        /*changed dynamically*/
-    
+    display:none;
     color:	#80ff00	;
 }
 
@@ -150,9 +175,9 @@ button{
     height:35px;
     margin-top:5px;
     margin-bottom:5px;
-    
+
     border-radius:8px;
-    background-color: rgba(128, 255, 0, 0.40);
+    background-color: rgba(128, 255, 0, 0.20);
 }
 
 #countdown-timer .change-set-time button:hover{
@@ -175,7 +200,7 @@ button{
     background-color:#80ff00;
     border-bottom-left-radius: 5px ;
     border-bottom-right-radius: 5px ;
-    
+
     box-shadow:7px 7px rgba(128, 255, 0, 0.5);
 }
 
@@ -225,9 +250,9 @@ button{
 /*---------------STOPWATCH----------------*/
 
 #stopwatch{
-    
+
     order:1;                         /*changed dynamically*/
-    
+    display:;
     color: rgb(240,189,15);
 }
 
@@ -359,9 +384,9 @@ button{
 /*-----------ALARM---------------------*/
 
 #alarm{
-    
+
     order:2;                         /*changed dynamically*/
-    
+    display:none;
     color:#3d88dc;
 
 }
@@ -561,8 +586,27 @@ button{
     margin-right:60px;
 }
 
-#alarm .output .cancel{
+#alarm button.alarm{
+    color:white;
+    background-color: inherit;
+    border-radius:0px;
     margin-left:20%;
+}
+
+#alarm button.alarm-ringing{
+    animation-name: ring;
+    animation-duration: 0.2s;
+    animation-iteration-count: infinite;
+}
+
+@keyframes ring {
+    25%  {transform:rotate(-15deg);}
+    75%  {transform:rotate(15deg);}
+}
+
+#alarm .output .cancel{
+    margin-left:2%;
+    margin-right:1%;
     font-family: 'Oswald', sans-serif;
     width: -moz-fit-content;
     width: -webkit-fit-content;
@@ -574,7 +618,7 @@ button{
 
 #alarm button.delete-icon{
     transition:all 0.3s;
-    color:#cc0000;
+    color:#ff0000;
     padding:0px;
     margin-right:3%;
     font-size:15px;
